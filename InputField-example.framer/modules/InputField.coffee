@@ -158,7 +158,7 @@ class exports.InputField extends Layer
 			verticalAlign: "top"
 			"-webkit-appearance": "none"
 			opacity:       if @isFile then 0     else 1
-			pointerEvents: if @isFile then "all" else "none"
+			pointerEvents: if @isFile then "all" else "auto"
 			
 		@input.style[key]  = val for key, val of inputStyle
 		@input.style.color = @options.color if @options.color?
