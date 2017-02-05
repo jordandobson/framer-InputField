@@ -24,7 +24,7 @@
 ################################################################################
 
 
-class exports.InputField extends Layer
+class InputField extends Layer
 
 	PATTERN_NUMBER = "[0-9]*"
 	
@@ -251,6 +251,65 @@ class exports.InputField extends Layer
 			@input.style.color = "#fff"
 			@input.style.textIndent = "1em"
 			@.backgroundColor  = "#fff"
-		
-		
-		
+
+
+
+convertToInputField = (layer, @options={}) ->
+	layerCSS = {}
+	layer._info.metadata.css.forEach (rule) ->
+		return if _.includes rule, '/*'
+		arr = rule.split(': ')
+		layerCSS[arr[0]] = arr[1].replace(';','').replace('px','')
+
+	@options.color            ?= layerCSS["color"] ?= "000"
+	@options.backgroundColor  ?= layerCSS["background-color"] ?= "transparent"
+	@options.borderRadius     ?= layerCSS["border-radius"] ?= 0
+	@options.type             ?= "text"
+	@options.fontSize         ?= layerCSS["font-size"] ?= 32
+	@options.lineHeight 			?= layerCSS["line-height"] ?= @options.fontSize * 1.25 * 1.25;
+	@options.fontWeight       ?= layerCSS["font-weight"] ?= 300
+	@options.fontFamily       ?= layerCSS["font-family"] ?= "-apple-system, Helvetica Neue"
+	@options.letterSpacing    ?= layerCSS["letter-spacing"] ?= 0
+	@options.indent           ?= layerCSS["indent"] ?= 0
+	@options.placeHolder 			?= layer._info.metadata.string ?= ""
+	@options.placeHolderFocus ?= null
+	@options.placeHolderColor ?= null
+	@options.parent 					?= layer.parent
+	@options.name 						?= layer.name
+	@options.x 								?= layer.x
+	@options.y 								?= layer.y
+	@options.width						?= layer.width
+	@options.height						?= layer.height
+	@options.value 						?= null
+	@options.overflow					?= "visible"
+
+	@options.lineHeight = parseInt(@options.lineHeight) # parse into int
+	@options.fontSize = parseInt(@options.fontSize) # parse into int
+	@options.letterSpacing = parseInt(@options.letterSpacing) # parse into int
+
+	@options.y -= 2 * ( (@options.lineHeight-@options.fontSize)/2 ) # compensate for how CSS handles line height
+	@options.y -= 2 * @options.fontSize * 0.1 # sketch padding
+	@options.x -= @options.fontSize * 0.08 # sketch padding
+	@options.width += @options.fontSize * 0.5 # sketch padding
+
+	importPath = layer.__framerImportedFromPath
+	if _.includes importPath, '@2x'
+		@options.fontSize *= 2
+		@options.lineHeight *= 2
+		@options.letterSpacing *= 2
+		@options.height *= 2
+
+	element = new InputField @options
+
+	layer.destroy()
+	return element
+
+Layer::convertToInputField = -> convertToInputField(@)
+
+convertInputFields = (obj) ->
+	for prop,layer of obj
+		if layer._info.kind is "text"
+			obj[prop] = convertToInputField(layer)
+
+exports.InputField = InputField
+exports.convertInputFields = convertInputFields
