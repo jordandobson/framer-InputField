@@ -261,7 +261,7 @@ convertToInputField = (layer, @options={}) ->
 		arr = rule.split(': ')
 		layerCSS[arr[0]] = arr[1].replace(';','').replace('px','')
 
-	@options.color            ?= layerCSS["color"] ?= "000"
+	@options.color            ?= layerCSS["color"] ?= "#000"
 	@options.backgroundColor  ?= layerCSS["background-color"] ?= "transparent"
 	@options.borderRadius     ?= layerCSS["border-radius"] ?= 0
 	@options.type             ?= "text"
