@@ -253,13 +253,14 @@ class InputField extends Layer
 
 
 
-convertToInputField = (layer, @options={}) ->
+convertToInputField = (layer, settings) ->
 	layerCSS = {}
 	layer._info.metadata.css.forEach (rule) ->
 		return if _.includes rule, '/*'
 		arr = rule.split(': ')
 		layerCSS[arr[0]] = arr[1].replace(';','').replace('px','')
 
+	@options									 = _.clone(settings)
 	@options.color            ?= layerCSS["color"] ?= "#000"
 	@options.backgroundColor  ?= layerCSS["background-color"] ?= "transparent"
 	@options.borderRadius     ?= layerCSS["border-radius"] ?= 0
